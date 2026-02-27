@@ -36,7 +36,7 @@ class TicketMenu(Select):
         thread_name = f"{tipo}-{member.name}"
 
         # VERIFICA THREADS ABERTAS (PERSISTENTES)
-        threads = [t async for t in chan.threads() if not t.archived]
+        threads = [t for t in chan.threads if not t.archived]
         if any(t.name == thread_name for t in threads):
             return await interaction.response.send_message(
                 "Você já possui um ticket aberto.",
