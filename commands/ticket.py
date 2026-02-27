@@ -8,21 +8,18 @@ LOG_CHANNEL_ID    = 1476740201471545488
 PING_ROLE_ID      = 1476739826995826841
 
 
-# Função para gerar arquivo de log
 def file_from_text(content: str) -> discord.File:
     buffer = io.BytesIO(content.encode())
     return discord.File(buffer, filename="ticket_log.txt")
 
 
-# Select Menu
 class TicketMenu(Select):
-    def __init__(self):
+    def init(self):
         options = [
             discord.SelectOption(label="Inscrição", value="Inscrição"),
             discord.SelectOption(label="Dúvida", value="Dúvida"),
         ]
-
-        super().__init__(
+        super().init(
             placeholder="Selecione uma opção",
             options=options,
             min_values=1,
@@ -38,7 +35,9 @@ class TicketMenu(Select):
 
         thread_name = f"{tipo}-{member.name}"
 
-        if discord.utils.get(chan.threads, name=thread_name):
+        # VERIFICA THREADS ABERTAS (PERSISTENTES)
+        threads = [t async for t in chan.threads() if not t.archived]
+        if any(t.name == thread_name for t in threads):
             return await interaction.response.send_message(
                 "Você já possui um ticket aberto.",
                 ephemeral=True
@@ -49,7 +48,6 @@ class TicketMenu(Select):
             type=discord.ChannelType.private_thread,
             invitable=False
         )
-
         await thread.add_user(member)
 
         embed = discord.Embed(
@@ -62,22 +60,20 @@ class TicketMenu(Select):
         await thread.send(embed=embed, view=CloseTicketView())
 
         await interaction.response.send_message(
-            "<a:Discord:1476725755177206010> | Thread criada com sucesso!",
+            ":Discord: | Thread criada com sucesso!",
             ephemeral=True
         )
 
 
-# View do Menu
 class TicketMenuView(View):
-    def __init__(self):
-        super().__init__(timeout=None)
+    def init(self):
+        super().init(timeout=None)
         self.add_item(TicketMenu())
 
 
-# View para fechar ticket
 class CloseTicketView(View):
-    def __init__(self):
-        super().__init__(timeout=None)
+    def init(self):
+        super().init(timeout=None)
 
     @discord.ui.button(
         label="Fechar Thread",
@@ -113,7 +109,7 @@ class CloseTicketView(View):
         await thread.edit(archived=True, locked=True)
 
 class Ticket(commands.Cog):
-    def __init__(self, bot):
+    def init(self, bot):
         self.bot = bot
 
         # REGISTRA VIEWS PERSISTENTES
@@ -140,9 +136,8 @@ class Ticket(commands.Cog):
             inline=False
         )
 
-        await ctx.send(embed=embed, view=TicketMenuView())
+        await ctx.send(embed=embed, view=TicketMenuView())  # opcional se quiser reenviar o painel
 
 
-# Setup
 async def setup(bot):
-    await bot.add_cog(Ticket(bot))
+    await bot.add_cog(Ticket(bot)
