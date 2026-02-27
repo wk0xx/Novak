@@ -14,7 +14,7 @@ def file_from_text(content: str) -> discord.File:
 
 
 class TicketMenu(Select):
-    def init(self):
+    def __init__(self):
         options = [
             discord.SelectOption(label="Inscrição", value="Inscrição"),
             discord.SelectOption(label="Dúvida", value="Dúvida"),
@@ -66,14 +66,14 @@ class TicketMenu(Select):
 
 
 class TicketMenuView(View):
-    def init(self):
-        super().init(timeout=None)
+    def __init__(self):
+        super().__init__(timeout=None)
         self.add_item(TicketMenu())
 
 
 class CloseTicketView(View):
-    def init(self):
-        super().init(timeout=None)
+    def __init__(self):
+        super().__init__(timeout=None)
 
     @discord.ui.button(
         label="Fechar Thread",
@@ -109,7 +109,7 @@ class CloseTicketView(View):
         await thread.edit(archived=True, locked=True)
 
 class Ticket(commands.Cog):
-    def init(self, bot):
+    def __init__(self, bot):
         self.bot = bot
 
         # REGISTRA VIEWS PERSISTENTES
