@@ -19,7 +19,7 @@ class TicketMenu(Select):
             discord.SelectOption(label="Inscrição", value="Inscrição"),
             discord.SelectOption(label="Dúvida", value="Dúvida"),
         ]
-        super().init(
+        super().__init__(
             placeholder="Selecione uma opção",
             options=options,
             min_values=1,
